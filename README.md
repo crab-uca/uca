@@ -5,3 +5,5 @@ This is an awesome team to study Parallel Compute together, including OpenCL, Cu
 zjunweihit: a Linux player, who is aiming to fly in the Compute sky.
 
 HackerLe1103: a guy who's hacking into the Compute and AI world.
+
+llseek: a Linux noob.
