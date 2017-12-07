@@ -13,6 +13,7 @@
 //    This is a simple example that demonstrates basic OpenCL setup and
 //    use.
 
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #include <iostream>
 #include <fstream>
 #include <sstream>
