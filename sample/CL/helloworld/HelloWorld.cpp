@@ -23,6 +23,8 @@
 #include <CL/cl.h>
 #endif
 
+#include "InfoDevice.h"
+
 ///
 //  Constants
 //
@@ -73,6 +75,76 @@ cl_context CreateContext()
     }
 
     return context;
+}
+
+///
+// Query device info
+//
+void QueryDeviceInfo(cl_context context)
+{
+    cl_int errNum;
+    cl_device_id *devices;
+    size_t deviceBufferSize = -1;
+
+    // First get the size of the devices buffer
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, 0, NULL, &deviceBufferSize);
+    if (errNum != CL_SUCCESS) {
+        std::cerr << "Failed call to clGetContextInfo(...,GL_CONTEXT_DEVICES,...)";
+        return;
+    }
+
+    if (deviceBufferSize <= 0) {
+        std::cerr << "No devices available.";
+        return;
+    }
+
+    // Allocate memory for the devices buffer
+    devices = new cl_device_id[deviceBufferSize / sizeof(cl_device_id)];
+    errNum = clGetContextInfo(context, CL_CONTEXT_DEVICES, deviceBufferSize, devices, NULL);
+    if (errNum != CL_SUCCESS) {
+        delete [] devices;
+        std::cerr << "Failed to get device IDs";
+        return;
+    }
+
+    InfoDevice<cl_device_type>::display(devices[0],
+            CL_DEVICE_TYPE,
+            "device type");
+    InfoDevice<cl_uint>::display(devices[0],
+            CL_DEVICE_VENDOR_ID,
+            "vendor id");
+    InfoDevice<cl_uint>::display(devices[0],
+            CL_DEVICE_MAX_COMPUTE_UNITS,
+            "max compute units");
+    InfoDevice<cl_uint>::display(devices[0],
+            CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS,
+            "max work-item dims");
+    InfoDevice<size_t>::display_arr(devices[0],
+            CL_DEVICE_MAX_WORK_ITEM_SIZES,
+            "max work-item sizes");
+    InfoDevice<size_t>::display(devices[0],
+            CL_DEVICE_MAX_WORK_GROUP_SIZE,
+            "max work-group size");
+    InfoDevice<char>::display_str(devices[0],
+            CL_DEVICE_NAME,
+            "device name");
+    InfoDevice<char>::display_str(devices[0],
+            CL_DEVICE_VENDOR,
+            "device vendor");
+    InfoDevice<char>::display_str(devices[0],
+            CL_DRIVER_VERSION,
+            "driver version");
+    /*
+    InfoDevice<char>::display_str(devices[0],
+            CL_DEVICE_PROFILE1,
+            "device profile");
+    */
+    InfoDevice<char>::display_str(devices[0],
+            CL_DEVICE_VERSION,
+            "device version");
+    InfoDevice<char>::display_str(devices[0],
+            CL_DEVICE_EXTENSIONS,
+            "device extensions");
 }
 
 ///
@@ -241,6 +313,9 @@ int main(int argc, char** argv)
         std::cerr << "Failed to create OpenCL context." << std::endl;
         return 1;
     }
+
+    // Query info on the first device available
+    QueryDeviceInfo(context);
 
     // Create a command-queue on the first device available
     // on the created context
