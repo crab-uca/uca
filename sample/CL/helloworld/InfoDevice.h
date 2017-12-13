@@ -2,7 +2,11 @@
 #define _INFODEVICE_H_
 
 #include <string>
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/cl.h>
+#endif
 
 template <typename T>
 void appendBitfield(T info, T value, std::string name, std::string & str)
